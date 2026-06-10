@@ -1,0 +1,5 @@
+# Skip everything from build context except Dockerfile and entrypoint.
+# The actual source tree is mounted as a volume at runtime, not COPYed.
+*
+!Dockerfile
+!entrypoint.sh

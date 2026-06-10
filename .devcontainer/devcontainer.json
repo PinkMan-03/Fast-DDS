@@ -1,0 +1,60 @@
+{
+    "name": "Fast DDS Dev (Ubuntu 24.04 + gcc-13)",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/workspace/Fast-DDS",
+    "remoteUser": "dev",
+
+    // Re-open the container after rebuild without losing volumes
+    "shutdownAction": "none",
+
+    // VSCode / Cursor specific tweaks (extensions auto-installed inside container)
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cmake-tools",
+                "twxs.cmake",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "vadimcn.vscode-lldb",
+                "eamodio.gitlens",
+                "redhat.vscode-yaml"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "args": ["-l"]
+                    }
+                },
+                "C_Cpp.default.compilerPath": "/usr/bin/g++",
+                "C_Cpp.default.cppStandard": "c++17",
+                "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+                "cmake.configureSettings": {
+                    "CMAKE_BUILD_TYPE": "Debug",
+                    "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+                },
+                "cmake.generator": "Ninja",
+                "files.watcherExclude": {
+                    "**/build/**": true,
+                    "**/install/**": true,
+                    "**/log/**": true
+                }
+            }
+        }
+    },
+
+    // Forward common ports if you ever expose Fast DDS Monitor / Discovery Server
+    "forwardPorts": [],
+
+    // Run after container is created (one-time setup)
+    "postCreateCommand": "echo '[fastdds-dev] Container ready. gcc version:'; gcc --version | head -1; echo 'cmake version:'; cmake --version | head -1",
+
+    // Mount features
+    "remoteEnv": {
+        "CCACHE_DIR": "/home/dev/.ccache",
+        "CCACHE_MAXSIZE": "5G"
+    }
+}

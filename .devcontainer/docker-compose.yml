@@ -1,0 +1,75 @@
+# =============================================================================
+# Fast DDS Learning Dev Container - docker compose
+# -----------------------------------------------------------------------------
+# Usage:
+#   cd .devcontainer
+#   docker compose up -d            # Build & start in background
+#   docker compose exec dev bash    # Enter the container
+#   docker compose down             # Stop & remove container (volumes kept)
+#   docker compose down -v          # Stop & remove container + volumes (clean)
+# =============================================================================
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Match host UID/GID so mounted files have correct ownership
+        USER_UID: "${USER_UID:-1000}"
+        USER_GID: "${USER_GID:-1000}"
+    image: fastdds-dev:24.04
+    container_name: fastdds-dev
+    hostname: fastdds-dev
+
+    # ----- Network ----------------------------------------------------------
+    # DDS multicast discovery requires host network (Linux only)
+    network_mode: host
+    # Shared memory transport between processes requires host IPC
+    ipc: host
+
+    # ----- Volumes ----------------------------------------------------------
+    volumes:
+      # Mount the Fast DDS source tree (read-write)
+      - ../:/workspace/Fast-DDS:rw
+
+      # Persistent colcon workspace (build/install/log survive container restart)
+      - fastdds-ws:/workspace/ws
+
+      # Persistent ccache (compile cache across container rebuilds)
+      - fastdds-ccache:/home/dev/.ccache
+
+      # Persistent shell history
+      - fastdds-history:/home/dev/.history
+
+      # SSH config (if user wants to git push from inside container)
+      - ${HOME}/.ssh:/home/dev/.ssh:ro
+
+      # Git config (so commits inside container have correct name/email)
+      - ${HOME}/.gitconfig:/home/dev/.gitconfig:ro
+
+    working_dir: /workspace/Fast-DDS
+
+    # ----- Interactive shell -----------------------------------------------
+    tty: true
+    stdin_open: true
+
+    # ENTRYPOINT (entrypoint.sh) + default CMD (sleep infinity) come from the
+    # Dockerfile. Override `command` here only if you need a different default.
+
+    environment:
+      CCACHE_DIR: /home/dev/.ccache
+      CCACHE_MAXSIZE: 5G
+      HISTFILE: /home/dev/.history/.bash_history
+
+# ---------------------------------------------------------------------------
+# Named volumes: data persists even after `docker compose down`
+# Use `docker compose down -v` to fully clean (will lose build cache)
+# ---------------------------------------------------------------------------
+volumes:
+  fastdds-ws:
+    name: fastdds-ws
+  fastdds-ccache:
+    name: fastdds-ccache
+  fastdds-history:
+    name: fastdds-history

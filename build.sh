@@ -1,16 +1,31 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Fast DDS Learning Project - Pure CMake Build Script
+# Fast DDS Learning Project - Build & Dev-Container Manager
 # -----------------------------------------------------------------------------
-# Run inside the dev container (docker compose exec dev bash).
+# Works in two modes:
+#   * On the HOST  : manages the dev container (enter / build image / clean)
+#   * INSIDE container : compiles Fast DDS (deps + main lib + verify)
+# The script auto-detects where it runs.
 #
-# Directory layout:
+# Directory layout (inside container):
 #   /workspace/ws/src/         <- dependency sources (cloned via git)
 #   /workspace/ws/build/       <- out-of-tree build dirs (one per package)
 #   /workspace/ws/install/     <- final install prefix (libs + headers + cmake)
 #   /workspace/Fast-DDS/       <- this repo (bind-mounted from host)
 #
-# Usage:
+# Typical workflow:
+#   ./build.sh enter           # (host) start dev container & open bash
+#   ./build.sh                 # (container) full Release build
+#   source /workspace/ws/install/setup.bash   # (container) activate
+#
+# Docker commands (host):
+#   ./build.sh enter           # start container with `run --rm /bin/bash`
+#   ./build.sh docker-build    # (re)build the dev image
+#   ./build.sh docker-status   # show docker resources
+#   ./build.sh docker-clean    # stop container (keep volumes)
+#   ./build.sh docker-clean --all   # wipe volumes too
+#
+# Build commands (container):
 #   ./build.sh                # build (Release)
 #   ./build.sh debug          # build (Debug)
 #   ./build.sh rebuild        # clean then build
@@ -21,7 +36,7 @@
 #   ./build.sh verify         # check install artifacts
 #   ./build.sh ccache         # show ccache stats
 #   ./build.sh env            # print env exports to source in your shell
-#   ./build.sh help           # show help
+#   ./build.sh help           # show full help
 # =============================================================================
 
 set -euo pipefail
@@ -42,6 +57,11 @@ FASTCDR_REPO="${FASTCDR_REPO:-https://github.com/eProsima/Fast-CDR.git}"
 FASTCDR_BRANCH="${FASTCDR_BRANCH:-master}"
 FOONATHAN_REPO="${FOONATHAN_REPO:-https://github.com/eProsima/foonathan_memory_vendor.git}"
 FOONATHAN_BRANCH="${FOONATHAN_BRANCH:-master}"
+
+# Docker dev container settings (used on the host side)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEVCONTAINER_DIR="${DEVCONTAINER_DIR:-$SCRIPT_DIR/.devcontainer}"
+DOCKER_SERVICE="${DOCKER_SERVICE:-dev}"
 
 # Detect best generator
 if command -v ninja >/dev/null 2>&1; then
@@ -74,14 +94,21 @@ log_err()   { echo -e "${C_RED}[FAIL]${C_RST}  $*" >&2; }
 log_step()  { echo -e "\n${C_BOLD}${C_CYAN}===== $* =====${C_RST}"; }
 
 # -----------------------------------------------------------------------------
+# Container detection (used by both build flow and docker subcommands)
+# -----------------------------------------------------------------------------
+is_in_container() {
+    [ -f /.dockerenv ] || grep -qE 'docker|kubepods' /proc/1/cgroup 2>/dev/null
+}
+
+# -----------------------------------------------------------------------------
 # Pre-flight checks
 # -----------------------------------------------------------------------------
 check_env() {
     log_step "Environment check"
 
-    if [ ! -f /.dockerenv ] && ! grep -qE 'docker|kubepods' /proc/1/cgroup 2>/dev/null; then
+    if ! is_in_container; then
         log_warn "You don't appear to be inside the dev container."
-        log_warn "Recommended: docker compose exec dev bash, then run this script."
+        log_warn "Recommended: ./build.sh enter   (then re-run this command inside)"
         log_warn "Continuing in 3s..."
         sleep 3
     else
@@ -335,17 +362,140 @@ show_ccache() {
     ccache -s
 }
 
+# =============================================================================
+# Docker subcommands (run from the host, NOT from inside the container)
+# =============================================================================
+
+# Make sure docker + docker-compose-plugin are available on the host
+ensure_docker() {
+    if ! command -v docker >/dev/null 2>&1; then
+        log_err "Docker is not installed on the host."
+        log_err "Install: https://docs.docker.com/engine/install/"
+        exit 1
+    fi
+    if ! docker compose version >/dev/null 2>&1; then
+        log_err "docker compose plugin is not available."
+        log_err "Install: sudo apt-get install docker-compose-plugin"
+        exit 1
+    fi
+    if [ ! -f "$DEVCONTAINER_DIR/docker-compose.yml" ]; then
+        log_err "Cannot find $DEVCONTAINER_DIR/docker-compose.yml"
+        exit 1
+    fi
+}
+
+# Open an interactive bash session inside the dev container.
+# Uses `docker compose run --rm` so the container is removed on exit
+# (named volumes ws/ccache/history are still kept across runs).
+do_enter() {
+    if is_in_container; then
+        log_warn "Already inside the container ($(hostname)). Spawning bash..."
+        exec /bin/bash
+    fi
+
+    ensure_docker
+
+    log_step "Enter fastdds-dev container"
+    log_info "Command: docker compose run --rm $DOCKER_SERVICE /bin/bash"
+    log_info "Tip: inside the container, run './build.sh' to compile Fast DDS."
+
+    cd "$DEVCONTAINER_DIR"
+    exec docker compose run --rm "$DOCKER_SERVICE" /bin/bash
+}
+
+# Build (or rebuild) the dev image
+do_docker_build() {
+    if is_in_container; then
+        log_err "Cannot build a docker image from inside a container."
+        exit 1
+    fi
+
+    ensure_docker
+
+    log_step "Build docker image (fastdds-dev:24.04)"
+    cd "$DEVCONTAINER_DIR"
+
+    local nocache=""
+    if [ "${1:-}" = "--no-cache" ]; then
+        nocache="--no-cache"
+        log_info "Rebuilding from scratch (--no-cache)"
+    fi
+
+    docker compose build $nocache
+    log_ok "Image built. Run './build.sh enter' to use it."
+}
+
+# Show docker resource status on the host
+do_docker_status() {
+    if is_in_container; then
+        log_info "Currently inside container ($(hostname)). Host-side status is unavailable."
+        return
+    fi
+
+    ensure_docker
+
+    log_step "Docker resources for fastdds-dev"
+
+    echo ""
+    echo "${C_BOLD}Images:${C_RST}"
+    docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" \
+        | grep -E "REPOSITORY|fastdds" || echo "  (no fastdds image)"
+
+    echo ""
+    echo "${C_BOLD}Containers (running + stopped):${C_RST}"
+    docker ps -a --filter "name=fastdds" --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" \
+        || echo "  (none)"
+
+    echo ""
+    echo "${C_BOLD}Volumes (persistent data):${C_RST}"
+    docker volume ls --format "table {{.Driver}}\t{{.Name}}" \
+        | grep -E "DRIVER|fastdds" || echo "  (none)"
+}
+
+# Tear down container and (optionally) wipe persistent volumes
+do_docker_clean() {
+    if is_in_container; then
+        log_err "Cannot clean docker resources from inside a container."
+        exit 1
+    fi
+
+    ensure_docker
+
+    cd "$DEVCONTAINER_DIR"
+
+    if [ "${1:-}" = "--all" ] || [ "${1:-}" = "-v" ]; then
+        log_step "Wipe container + named volumes (ws/ccache/history)"
+        log_warn "This will DELETE all compiled artifacts and ccache!"
+        docker compose down -v
+        log_ok "All cleaned."
+    else
+        log_step "Stop container (keep named volumes)"
+        docker compose down
+        log_ok "Container removed. Volumes kept (re-enter with './build.sh enter')."
+        log_info "Use './build.sh docker-clean --all' to wipe volumes too."
+    fi
+}
+
 # -----------------------------------------------------------------------------
 # Help
 # -----------------------------------------------------------------------------
 show_help() {
     cat <<EOF
-${C_BOLD}Fast DDS Learning Project - Pure CMake Build Script${C_RST}
+${C_BOLD}Fast DDS Learning Project - Build & Dev-Container Manager${C_RST}
 
 ${C_BOLD}USAGE${C_RST}
     ./build.sh [command]
 
-${C_BOLD}COMMANDS${C_RST}
+${C_BOLD}DOCKER COMMANDS${C_RST} (run from the HOST)
+    enter           Start dev container and open bash (uses 'run --rm').
+                    Alias: shell, docker
+    docker-build    Build the dev image (./devcontainer/Dockerfile).
+                    Add --no-cache to rebuild from scratch.
+    docker-status   Show docker image / container / volume status.
+    docker-clean    Stop container, keep volumes.
+                    --all : also wipe named volumes (DESTROYS build cache!)
+
+${C_BOLD}BUILD COMMANDS${C_RST} (run INSIDE the container)
     build          Full pipeline: fetch deps + build all + verify. (default)
     debug          Same as build but with BUILD_TYPE=Debug.
     rebuild        Clean then full build.
@@ -371,6 +521,14 @@ ${C_BOLD}ENVIRONMENT VARIABLES${C_RST}
     FOONATHAN_BRANCH  foonathan_memory_vendor branch     (default: master)
 
 ${C_BOLD}EXAMPLES${C_RST}
+    # --- on the host -----------------------------------------------------
+    ./build.sh enter                    # start dev container & open bash
+    ./build.sh docker-build             # (re)build the dev image
+    ./build.sh docker-status            # show container/volume status
+    ./build.sh docker-clean             # stop container (keep build cache)
+    ./build.sh docker-clean --all       # nuke volumes too
+
+    # --- inside the container --------------------------------------------
     ./build.sh                          # full Release build
     ./build.sh debug                    # full Debug build
     BUILD_TYPE=RelWithDebInfo ./build.sh
@@ -405,8 +563,24 @@ EOF
 # -----------------------------------------------------------------------------
 main() {
     local cmd="${1:-build}"
+    shift || true
 
     case "$cmd" in
+        # ---- Docker subcommands (host-side) --------------------------------
+        enter|shell|docker)
+            do_enter
+            ;;
+        docker-build|build-image)
+            do_docker_build "$@"
+            ;;
+        docker-status|status)
+            do_docker_status
+            ;;
+        docker-clean)
+            do_docker_clean "$@"
+            ;;
+
+        # ---- Build pipeline (container-side) -------------------------------
         build)
             do_build_all
             ;;
