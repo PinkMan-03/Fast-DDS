@@ -1,0 +1,174 @@
+<mxfile host="app.diagrams.net" agent="cursor" version="24.0.0">
+  <diagram id="fastdds-datatypes" name="FastDDS DataTypes and Pools">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2260" pageHeight="1440" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ================= LEGEND ================= -->
+        <mxCell id="legend" value="&lt;b&gt;图例 Legend&lt;/b&gt;&lt;hr align=&#39;left&#39;&gt;实线空心三角 ▷ = 继承 (extends)&lt;br&gt;虚线空心三角 ▷ = 实现接口 (implements)&lt;br&gt;实心菱形 ◆ = 组合/聚合 (owns)&lt;br&gt;虚线开箭头 → = 依赖 / 管理" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fillColor=#ffffff;strokeColor=#666666;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="40" width="300" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= IDENTITY LAYER ================= -->
+        <mxCell id="idband" value="身份层 / Identity Layer (RTPS 基础类型)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fillColor=#f5f5f5;strokeColor=#999999;fontStyle=1;fontSize=13;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1460" height="320" as="geometry" />
+        </mxCell>
+
+        <mxCell id="guid" value="&lt;b&gt;GUID_t&lt;/b&gt;&lt;hr&gt;+ guidPrefix : GuidPrefix_t&lt;br&gt;+ entityId : EntityId_t" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="70" y="95" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="guidprefix" value="&lt;b&gt;GuidPrefix_t&lt;/b&gt;&lt;hr&gt;+ value : octet[12]" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="310" y="95" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="entityid" value="&lt;b&gt;EntityId_t&lt;/b&gt;&lt;hr&gt;+ value : octet[4]" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="95" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="seqnum" value="&lt;b&gt;SequenceNumber_t&lt;/b&gt;&lt;hr&gt;+ high : int32_t&lt;br&gt;+ low : uint32_t" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="730" y="95" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="seqnumset" value="&lt;b&gt;SequenceNumberSet_t&lt;/b&gt;&lt;hr&gt;+ base : SequenceNumber_t&lt;br&gt;+ bitmap" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="970" y="95" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="insthandle" value="&lt;b&gt;InstanceHandle_t&lt;/b&gt;&lt;hr&gt;+ value : octet[16]&lt;br&gt;(实例 key 句柄)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="95" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="locator" value="&lt;b&gt;Locator_t&lt;/b&gt;&lt;hr&gt;+ kind : int32_t&lt;br&gt;+ port : uint32_t&lt;br&gt;+ address : octet[16]" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="70" y="220" width="210" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="locatorlist" value="&lt;b&gt;LocatorList_t&lt;/b&gt;&lt;hr&gt;+ vector&amp;lt;Locator_t&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="310" y="220" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="timet" value="&lt;b&gt;Time_t / Duration_t&lt;/b&gt;&lt;hr&gt;+ seconds : int32_t&lt;br&gt;+ fraction : uint32_t" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="220" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="sampleid" value="&lt;b&gt;SampleIdentity&lt;/b&gt;&lt;hr&gt;+ writer_guid_ : GUID_t&lt;br&gt;+ sequence_number_ : SequenceNumber_t" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="760" y="220" width="250" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="writeparams" value="&lt;b&gt;WriteParams&lt;/b&gt;&lt;hr&gt;+ sample_identity : SampleIdentity&lt;br&gt;+ related_sample_identity" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="220" width="250" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ================= CARRIER LAYER ================= -->
+        <mxCell id="cachechange" value="&lt;b&gt;CacheChange_t&lt;/b&gt;&lt;hr&gt;+ kind : ChangeKind_t&lt;br&gt;+ writerGUID : GUID_t&lt;br&gt;+ instanceHandle : InstanceHandle_t&lt;br&gt;+ sequenceNumber : SequenceNumber_t&lt;br&gt;+ serializedPayload : SerializedPayload_t&lt;br&gt;+ inline_qos : SerializedPayload_t&lt;br&gt;+ sourceTimestamp : Time_t&lt;br&gt;+ write_params : WriteParams&lt;br&gt;- union { reader_info; writer_info; }&lt;hr&gt;+ payload_owner() : IPayloadPool*" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="440" y="400" width="300" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="payload" value="&lt;b&gt;SerializedPayload_t&lt;/b&gt;&lt;hr&gt;+ data : octet*&lt;br&gt;+ length : uint32_t&lt;br&gt;+ max_size : uint32_t&lt;br&gt;+ encapsulation : uint16_t&lt;br&gt;+ payload_owner : IPayloadPool*&lt;hr&gt;+ copy(const SerializedPayload_t*, bool)&lt;br&gt;+ reserve(uint32_t)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="810" y="400" width="300" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="history" value="&lt;b&gt;WriterHistory / ReaderHistory&lt;/b&gt;&lt;br&gt;&amp;laquo;coordinator&amp;raquo;&lt;hr&gt;- change_pool_ : shared_ptr&amp;lt;IChangePool&amp;gt;&lt;br&gt;- payload_pool_ : shared_ptr&amp;lt;IPayloadPool&amp;gt;&lt;hr&gt;reserve_cache() + get_payload() 配对使用" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="330" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- ================= INTERFACE LAYER ================= -->
+        <mxCell id="ichangepool" value="&lt;b&gt;&amp;laquo;interface&amp;raquo;&lt;br&gt;IChangePool&lt;/b&gt;&lt;hr&gt;+ reserve_cache(CacheChange_t*&amp;)&lt;br&gt;+ release_cache(CacheChange_t*)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fontStyle=2;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="700" width="260" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ipayloadpool" value="&lt;b&gt;&amp;laquo;interface&amp;raquo;&lt;br&gt;IPayloadPool&lt;/b&gt;&lt;hr&gt;+ get_payload(size, payload)&lt;br&gt;+ get_payload(data, payload)&lt;br&gt;+ release_payload(payload)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fontStyle=2;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="690" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= IMPL LEVEL 1 ================= -->
+        <mxCell id="cachechangepool" value="&lt;b&gt;CacheChangePool&lt;/b&gt;&lt;hr&gt;- free_caches_ : vector&amp;lt;CacheChange_t*&amp;gt;&lt;br&gt;- all_caches_ : vector&amp;lt;CacheChange_t*&amp;gt;&lt;br&gt;- memory_mode_ : MemoryManagementPolicy&lt;hr&gt;+ reserve_cache()&lt;br&gt;+ release_cache()" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="290" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="basicpayloadpool" value="&lt;b&gt;BasicPayloadPool&lt;/b&gt;&lt;hr&gt;搭 CacheChangePool 复用&lt;br&gt;内含 detail::Impl&amp;lt;policy&amp;gt; 特化" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="420" y="910" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="itopicpayloadpool" value="&lt;b&gt;&amp;laquo;interface&amp;raquo;&lt;br&gt;ITopicPayloadPool&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fontStyle=2;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="910" width="230" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="datasharingpool" value="&lt;b&gt;DataSharingPayloadPool&lt;/b&gt;&lt;hr&gt;# segment_ : SharedMemSegment&lt;br&gt;# descriptor_ : PoolDescriptor&lt;hr&gt;跨进程共享内存 + seqlock&lt;br&gt;+ get_reader_pool() / get_writer_pool()" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="890" width="290" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="registry" value="&lt;b&gt;TopicPayloadPoolRegistry&lt;/b&gt;&lt;br&gt;&amp;laquo;singleton&amp;raquo;&lt;hr&gt;- pool_map_ : map&amp;lt;topic, entry&amp;gt;&lt;hr&gt;+ get(topic, config) : shared_ptr&amp;lt;ITopicPayloadPool&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="890" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= IMPL LEVEL 2 ================= -->
+        <mxCell id="topicpayloadpool" value="&lt;b&gt;TopicPayloadPool&lt;/b&gt;&lt;hr&gt;# free_payloads_ : vector&amp;lt;PayloadNode*&amp;gt;&lt;br&gt;# all_payloads_ : vector&amp;lt;PayloadNode*&amp;gt;&lt;hr&gt;PayloadNode 带 atomic ref_counter&lt;br&gt;topic 级共享 + 零拷贝&lt;br&gt;# do_get_payload(resizeable)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1110" width="300" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="writerpool" value="&lt;b&gt;WriterPool&lt;/b&gt;&lt;hr&gt;写端:分配+提交 seqlock" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1110" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="readerpool" value="&lt;b&gt;ReaderPool&lt;/b&gt;&lt;hr&gt;读端:seqlock 校验读取" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="1110" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ================= IMPL LEVEL 3 (leaves) ================= -->
+        <mxCell id="pre" value="&lt;b&gt;PreallocatedTopicPayloadPool&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1330" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="prerealloc" value="&lt;b&gt;PreallocatedReallocTopicPayloadPool&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1330" width="270" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dyn" value="&lt;b&gt;DynamicTopicPayloadPool&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1330" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dynreuse" value="&lt;b&gt;DynamicReusableTopicPayloadPool&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1330" width="270" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EDGES: identity internal ================= -->
+        <mxCell id="i1" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="guid" target="guidprefix"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i2" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="guid" target="entityid"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i3" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="seqnumset" target="seqnum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i4" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="locatorlist" target="locator"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i5" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="sampleid" target="guid"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i6" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="sampleid" target="seqnum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="i7" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;" edge="1" parent="1" source="writeparams" target="sampleid"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ================= EDGES: CacheChange_t uses identity types ================= -->
+        <mxCell id="u1" value="writerGUID" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="guid"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="u2" value="sequenceNumber" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="seqnum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="u3" value="instanceHandle" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="insthandle"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="u4" value="sourceTimestamp" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="timet"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="u5" value="write_params" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="writeparams"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ================= EDGES: carrier / pool relations ================= -->
+        <mxCell id="e1" value="serializedPayload / inline_qos" style="endArrow=open;startArrow=diamondThin;startFill=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="payload"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="payload_owner" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cachechange" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="payload_owner" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="payload" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="reserve / release" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ichangepool" target="cachechange"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="manages data" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ipayloadpool" target="payload"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- realizations -->
+        <mxCell id="e6" style="endArrow=block;endFill=0;dashed=1;html=1;" edge="1" parent="1" source="cachechangepool" target="ichangepool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="endArrow=block;endFill=0;dashed=1;html=1;" edge="1" parent="1" source="basicpayloadpool" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="endArrow=block;endFill=0;dashed=1;html=1;" edge="1" parent="1" source="itopicpayloadpool" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" style="endArrow=block;endFill=0;dashed=1;html=1;" edge="1" parent="1" source="datasharingpool" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- inheritance -->
+        <mxCell id="e10" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="topicpayloadpool" target="itopicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="writerpool" target="datasharingpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="readerpool" target="datasharingpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="pre" target="topicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="prerealloc" target="topicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="dyn" target="topicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="endArrow=block;endFill=0;html=1;" edge="1" parent="1" source="dynreuse" target="topicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- registry manages topic pools -->
+        <mxCell id="e17" value="creates / caches" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="registry" target="topicpayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- history holds both pools -->
+        <mxCell id="e18" value="change_pool_" style="endArrow=diamondThin;endFill=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="history" target="ichangepool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" value="payload_pool_" style="endArrow=diamondThin;endFill=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="history" target="ipayloadpool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- BasicPayloadPool built on CacheChangePool -->
+        <mxCell id="e20" value="built on change_pool_" style="endArrow=open;dashed=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="basicpayloadpool" target="cachechangepool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
